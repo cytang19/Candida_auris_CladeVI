@@ -1,13 +1,13 @@
-FROM ubuntu:20.04
+FROM ubuntu:26.04
 SHELL ["/bin/bash", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
 RUN apt-get install -y wget curl unzip build-essential datamash graphviz
 
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py38_23.1.0-1-Linux-x86_64.sh \
-	&& bash Miniconda3-py38_23.1.0-1-Linux-x86_64.sh -b -p /opt/conda \
-	&& rm Miniconda3-py38_23.1.0-1-Linux-x86_64.sh
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py311_23.5.2-0-Linux-x86_64.sh \
+	&& bash Miniconda3-py311_23.5.2-0-Linux-x86_64.sh -b -p /opt/conda \
+	&& rm Miniconda3-py311_23.5.2-0-Linux-x86_64.sh
 ENV PATH="${PATH}:/opt/conda/bin"
 
 RUN mkdir -p /home/download
@@ -30,12 +30,13 @@ RUN cd htslib-1.14 && make && cd ..
 RUN cd bcftools-1.14 && make && cd ..
 ENV PATH="/home/download/samtools-1.14:/home/download/bcftools-1.14:/home/download/htslib-1.14:${PATH}"
 
-RUN wget https://github.com/fenderglass/Flye/archive/refs/tags/2.9.1.tar.gz
-RUN tar -xvf /home/download/2.9.1.tar.gz
-RUN cd Flye-2.9.1/ && make && cd -
-RUN ln -s /home/download/Flye-2.9.1/bin/flye /usr/local/bin/flye
+RUN conda install -y -c bioconda flye=2.9.1
+# RUN wget https://github.com/fenderglass/Flye/archive/refs/tags/2.9.1.tar.gz
+# RUN tar -xvf /home/download/2.9.1.tar.gz
+# RUN cd Flye-2.9.1/ && make && cd -
+# RUN ln -s /home/download/Flye-2.9.1/bin/flye /usr/local/bin/flye
 
-RUN apt-get install -y git git-lfs python3.8-venv
+RUN apt-get install -y git git-lfs python3.13-venv
 RUN git clone https://github.com/nanoporetech/medaka.git
 RUN cd /home/download/medaka && make install && cd -
 ENV PATH="${PATH}:/home/download/medaka/venv/bin"
